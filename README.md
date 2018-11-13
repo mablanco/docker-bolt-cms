@@ -11,9 +11,11 @@ This will start a Bolt CMS instance listening on port 80:
 $ docker run -d -p 80:80 --name bolt mablanco/bolt-cms
 ```
 
-If you'd like persistance, you can create a volume for that purpose:
+If you'd like persistance, create three volumes for that purpose:
 
 ```
-$ docker volume create bolt_web
-$ docker run -d -p 80:80 --name bolt -v bolt_web:/var/www/html mablanco/bolt-cms
+$ docker volume create bolt_db
+$ docker volume create bolt_files
+$ docker volume create bolt_ext
+$ docker run -d -p 80:80 --name bolt -v bolt_db:/var/www/html/app/database -v bolt_files:/var/www/html/public/files -v bolt_ext:/var/www/html/extensions mablanco/bolt-cms
 ```
