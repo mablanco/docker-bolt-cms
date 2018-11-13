@@ -4,7 +4,7 @@ RUN curl -O https://bolt.cm/distribution/bolt-latest.tar.gz && \
     tar -xzf bolt-latest.tar.gz --strip-components=1 && \
     rm bolt-latest.tar.gz
 RUN apt-get update && \
-    apt-get -y install libicu-dev libgd-dev && \
+    apt-get -y install git libicu-dev libgd-dev && \
     apt-get clean
 RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
 RUN docker-php-ext-install -j$(nproc) intl
