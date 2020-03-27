@@ -1,4 +1,4 @@
-FROM php:7.2-apache
+FROM php:7.4.4-apache-buster
 WORKDIR /var/www/html
 RUN curl -O https://bolt.cm/distribution/bolt-latest.tar.gz && \
     tar -xzf bolt-latest.tar.gz --strip-components=1 && \
