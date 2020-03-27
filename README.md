@@ -1,5 +1,5 @@
 # docker-bolt-cms
-Docker image for Bolt CMS, an open source Content Management Tool, which strives to be as simple and straightforward as possible (https://bolt.cm/).
+Docker image for Bolt CMS, an open source Content Management Tool, which strives to be as simple and straightforward as possible (<https://bolt.cm/>).
 
 This image sets up a development environment and relies on Debian Linux, Apache 2 and PHP7.
 
