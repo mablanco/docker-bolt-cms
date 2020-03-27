@@ -1,20 +1,20 @@
 FROM php:7.4.4-apache-buster
+ENV DEBIAN_FRONTEND noninteractive
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 WORKDIR /var/www/html
+RUN apt-get update && \
+    apt-get -yq install git libicu-dev libgd-dev && \
+    apt-get -yq autoremove && \
+    apt-get clean && \
+    rm -rf /var/lib/{apt,dpkg,cache,log}
 RUN curl -s -O https://bolt.cm/distribution/bolt-latest.tar.gz && \
     tar -xzf bolt-latest.tar.gz --strip-components=1 && \
-    rm bolt-latest.tar.gz
-RUN apt-get update && \
-    apt-get -y install git libicu-dev libgd-dev && \
-    apt-get clean
-RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
-RUN docker-php-ext-install -j$(nproc) intl
-RUN docker-php-ext-install -j$(nproc) gd
-RUN docker-php-ext-install -j$(nproc) exif
-RUN docker-php-ext-install -j$(nproc) opcache
-RUN apt-get -y --purge remove libicu-dev libgd-dev
-RUN php app/nut init
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN a2enmod rewrite
-RUN chown -R www-data.www-data .
+    rm bolt-latest.tar.gz && \
+    mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini && \
+    docker-php-ext-install -j$(nproc) exif gd intl opcache && \
+    apt-get -y --purge remove libicu-dev libgd-dev && \
+    php app/nut init && \
+    sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf && \
+    a2enmod rewrite && \
+    chown -R www-data.www-data .
 EXPOSE 80
