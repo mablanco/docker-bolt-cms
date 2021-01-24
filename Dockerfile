@@ -1,4 +1,4 @@
-FROM php:7.4.4-apache-buster
+FROM php:7.4.9-apache-buster
 ENV DEBIAN_FRONTEND noninteractive
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 WORKDIR /var/www/html
