@@ -1,0 +1,23 @@
+FROM php:7.4.9-apache-buster
+ENV DEBIAN_FRONTEND noninteractive
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+WORKDIR /var/www/html
+RUN apt-get update && \
+    apt-get -yq dist-upgrade && \
+    apt-get -yq install libfreetype6-dev libpng-dev libjpeg-dev libicu-dev libmcrypt-dev libgd-dev libzip-dev git zip unzip && \
+    curl -sS https://getcomposer.org/installer | php  && \
+    mv -v composer.phar /usr/local/bin/composer && \
+    mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini && \
+    docker-php-ext-configure zip && \
+    docker-php-ext-install -j$(nproc) exif gd intl opcache mysqli zip && \
+    composer create-project bolt/project . && \
+    bin/console doctrine:database:create && \
+    bin/console doctrine:schema:create && \
+    bin/console bolt:add-user --admin admin secret email@example.com Admin && \
+    apt-get -y --purge remove libfreetype6-dev libpng-dev libjpeg-dev libicu-dev libmcrypt-dev libgd-dev libzip-dev && \
+    sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf && \
+    a2enmod rewrite && \
+    chown -R www-data.www-data . && \
+    apt-get clean && \
+    rm -rf /var/lib/{apt,dpkg,cache,log}
+EXPOSE 80
