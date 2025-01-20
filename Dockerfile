@@ -1,5 +1,5 @@
-FROM php:7.4.9-apache-buster
-ENV DEBIAN_FRONTEND noninteractive
+FROM php:8.3.13-apache
+ARG DEBIAN_FRONTEND=noninteractive
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 WORKDIR /var/www/html
 RUN apt-get update && \
