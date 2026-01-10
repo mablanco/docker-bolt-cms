@@ -1,6 +1,6 @@
-FROM php:8.1.31-apache
+FROM php:8.1.34
 ARG DEBIAN_FRONTEND=noninteractive
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+ARG BOLT_VERSION=5.2.0
 WORKDIR /var/www/html
 RUN apt-get update && \
     apt-get -yq dist-upgrade && \
@@ -15,10 +15,10 @@ RUN apt-get update && \
         git \
         zip \
         unzip && \
-    curl -sS https://getcomposer.org/installer | php  && \
+    curl -sS https://getcomposer.org/installer | php && \
     mv -v composer.phar /usr/local/bin/composer && \
     mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini && \
-    docker-php-ext-configure zip && \
+    docker-php-ext-configure gd --enable-gd --with-avif --with-webp --with-jpeg --with-xpm --with-freetype && \
     docker-php-ext-install -j$(nproc) \
         exif \
         gd \
@@ -26,16 +26,14 @@ RUN apt-get update && \
         opcache \
         mysqli \
         zip && \
-    composer create-project bolt/project . && \
+    apt-get clean && \
+    rm -rf /var/lib/{apt,dpkg,cache,log} && \
+    composer config --global audit.block-insecure false && \
+    composer create-project bolt/project:${BOLT_VERSION} . && \
     bin/console doctrine:database:create && \
     bin/console doctrine:schema:create && \
-    bin/console bolt:add-user --admin admin Secret@1 admin@foo.bar Admin && \
-    bin/console doctrine:fixtures:load && \
-    apt-get -y --purge remove libfreetype6-dev libpng-dev libjpeg-dev libicu-dev libmcrypt-dev libgd-dev libzip-dev && \
-    sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf && \
-    a2enmod rewrite && \
-    chown -R www-data:www-data . && \
-    apt-get -y autoremove && \
-    apt-get clean && \
-    rm -rf /var/lib/{apt,dpkg,cache,log}
-EXPOSE 80
+    bin/console doctrine:fixtures:load --no-interaction && \
+    bin/console bolt:add-user --admin bolt_admin Secret@1 admin@foo.bar BoltAdmin && \
+    chown -R www-data:www-data .
+EXPOSE 8000
+ENTRYPOINT ["bin/console", "server:run", "0.0.0.0:8000"]
