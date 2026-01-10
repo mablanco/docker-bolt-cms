@@ -1,4 +1,4 @@
-name: 'GetSimple CMS Docker image build and push to Docker Hub'
+name: 'Bolt CMS Docker image build and push to Docker Hub'
 
 on:
   workflow_dispatch:
